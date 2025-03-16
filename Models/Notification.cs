@@ -13,11 +13,13 @@ namespace Cura.Models
         public DateTime? SentAt { get; set; } = DateTime.Now;
         public bool IsSeen { get; set; } = false;
         
-        public ApplicationUser? User { get; set; }
+        public virtual ApplicationUser? User { get; set; }
     }
 
     public enum NotificationType
     {
-      
+        MedicationReminder,
+        GeneralAlert,
+        SystemNotification
     }
 }
