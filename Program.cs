@@ -1,7 +1,11 @@
 
+using Cura.Configuration;
+using Cura.Data.Interface;
+using Cura.Data.Repository;
 using Cura.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace Cura
 {
@@ -18,7 +22,37 @@ namespace Cura
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            builder.Services.AddAutoMapper(typeof(MapperConfig));
+
+
             builder.Services.AddControllers();
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Cura API",
+                    Version = "v1",
+                    Description = "Cura API powers the Virtual Health Assistant, a Generative AI-driven healthcare platform developed by Team Nexus for SalamHack 2025.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Team Nexus",
+                        Email = "mahmouda.mawlaa@gmail.com"
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT License",
+                        Url = new Uri("https://opensource.org/licenses/MIT")
+                    }
+                });
+
+                c.EnableAnnotations();
+            });
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
