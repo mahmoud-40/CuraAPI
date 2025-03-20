@@ -38,7 +38,7 @@ namespace Cura.Controllers
                 return NotFound(new { Message = "No notifications found" });
             }
 
-            return Ok(notifications);
+            return Ok(new {Data = notifications});
         }
 
         [HttpPut("{notificationId}")]

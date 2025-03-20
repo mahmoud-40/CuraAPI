@@ -1,4 +1,3 @@
-
 using Cura.Configuration;
 using Cura.Data.Interface;
 using Cura.Data.Repository;
@@ -16,20 +15,23 @@ namespace Cura
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseLazyLoadingProxies()
+                       .UseSqlServer(builder.Configuration.GetConnectionString("SQL-Server")));
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("SQL-Server")));
-
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
             builder.Services.AddAutoMapper(typeof(MapperConfig));
 
-
             builder.Services.AddControllers();
+            builder.Services.AddHttpClient();
+            builder.Services.AddCors();  // CORS added
 
+            // Swagger Configuration
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -52,11 +54,6 @@ namespace Cura
                 c.EnableAnnotations();
             });
 
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -66,11 +63,10 @@ namespace Cura
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
-
+            // Apply Middleware
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            // app.UseHttpsRedirection();  // Remove if using ngrok
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();
