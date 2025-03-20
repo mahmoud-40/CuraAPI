@@ -116,5 +116,6 @@ namespace Cura.Controllers
 
             return Ok(new { Message = "User created successfully", UserId = user.Id });
         }
+    
     }
 }
