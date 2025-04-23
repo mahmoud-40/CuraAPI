@@ -90,32 +90,5 @@ namespace Cura.Controllers
 
             return CreatedAtAction(nameof(GetUserNotifications), new { userId = send.UserId }, response);
         }
-
-        // CreateUser for testing purposes
-        [HttpPost("CreateUser")]
-        [SwaggerOperation(Summary = "Create a test user", Description = "Creates a user for testing purposes.")]
-        [SwaggerResponse(StatusCodes.Status200OK, "User created successfully")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid request data")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var user = new ApplicationUser
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = model.UserName,
-                Email = model.Email,
-                FullName = model.FullName,
-                BirthDate = model.BirthDate
-            };
-
-            await _context.Users.AddAsync(user);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new { Message = "User created successfully", UserId = user.Id });
-        }
-    
     }
 }
